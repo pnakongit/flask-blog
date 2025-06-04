@@ -2,7 +2,7 @@
 instance/*
 !instance/.gitignore
 .webassets-cache
-.env
+.flaskenv
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -101,7 +101,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.flaskenv
 .venv
 env/
 venv/
