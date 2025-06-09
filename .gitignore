@@ -4,6 +4,9 @@ instance/*
 .webassets-cache
 .flaskenv
 
+### Database
+app.db
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
