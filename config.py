@@ -12,3 +12,5 @@ class Config:
         "SQLALCHEMY_DATABASE_URI",
         "sqlite:///" + os.path.join(basedir, 'app.db')
     )
+    SQLALCHEMY_ECHO = True
+    LOGIN_VIEW = "login"
