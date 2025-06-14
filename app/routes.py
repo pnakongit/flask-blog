@@ -12,6 +12,13 @@ from app.db import db
 from app.models import User
 
 
+@app.before_request
+def add_last_seen_to_user() -> None:
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(timezone.utc)
+        db.session.commit()
+
+
 @app.route("/")
 @app.route("/index")
 @login_required
