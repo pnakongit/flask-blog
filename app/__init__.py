@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 
 from app.db import db
 from app.extensions import login
+from app.logging_setup import setup_logging
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
@@ -13,4 +14,6 @@ migrate = Migrate(app, db)
 login.init_app(app)
 login.login_view = app.config["LOGIN_VIEW"]
 
-from app import routes, models  # NOQA
+setup_logging(app)
+
+from app import routes, models, errors  # NOQA
