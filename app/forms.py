@@ -1,3 +1,5 @@
+from typing import Any
+
 import sqlalchemy as sa
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
@@ -40,3 +42,14 @@ class EditProfileForm(FlaskForm):
     username = StringField("Username ", validators=[DataRequired()])
     about_me = TextAreaField("About me", validators=[Length(min=0, max=140)])
     submit = SubmitField("Submit")
+
+    def __init__(self, original_username: str, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.original_username = original_username
+
+    def validate_username(self, username: StringField) -> None:
+        if username.data != self.original_username:
+            stmt = sa.select(User).where(User.username == username.data)
+            user = db.session.scalar(stmt)
+            if user is not None:
+                raise ValidationError("That username is taken. Please choose a different one.")
