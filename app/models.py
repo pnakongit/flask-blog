@@ -55,6 +55,14 @@ class User(UserMixin, db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
+    def follow(self, user: "User") -> None:
+        if not self.is_following(user):
+            self.following.add(user)
+
+    def unfollow(self, user: "User") -> None:
+        if self.is_following(user):
+            self.following.remove(user)
+
     def is_following(self, user: "User") -> bool:
         stmt = self.following.select().where(User.id == user.id)
         return db.session.scalar(stmt) is not None
