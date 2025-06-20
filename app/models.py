@@ -67,6 +67,16 @@ class User(UserMixin, db.Model):
         stmt = self.following.select().where(User.id == user.id)
         return db.session.scalar(stmt) is not None
 
+    def following_count(self) -> int | None:
+        query = sa.select(sa.func.count()).select_from(
+            self.following.select().subquery())
+        return db.session.scalar(query)
+
+    def followers_count(self) -> int | None:
+        query = sa.select(sa.func.count()).select_from(
+            self.followers.select().subquery())
+        return db.session.scalar(query)
+
 
 class Post(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
