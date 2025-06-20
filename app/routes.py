@@ -7,7 +7,7 @@ from flask.wrappers import Response
 import sqlalchemy as sa
 
 from app import app
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptySubmitForm
 from app.db import db
 from app.models import User
 
@@ -99,6 +99,8 @@ def register() -> str | Response:
 @app.route("/users/<username>")
 @login_required
 def user(username: str) -> str:
+    form = EmptySubmitForm()
+
     stmt = sa.select(User).where(User.username == username)
     user = db.first_or_404(stmt)
 
@@ -107,7 +109,12 @@ def user(username: str) -> str:
         {'author': user, 'body': 'Test post #2'},
     ]
 
-    return render_template("user.html", user=user, posts=posts)
+    return render_template(
+        "user.html",
+        user=user,
+        posts=posts,
+        form=form
+    )
 
 
 @app.route("/edit_profile", methods=["GET", "POST"])
