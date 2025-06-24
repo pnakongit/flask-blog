@@ -14,3 +14,4 @@ class Config:
     )
     SQLALCHEMY_ECHO = True
     LOGIN_VIEW = "login"
+    POSTS_PER_PAGE = 3

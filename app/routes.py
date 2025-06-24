@@ -7,9 +7,9 @@ from flask.wrappers import Response
 import sqlalchemy as sa
 
 from app import app
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptySubmitForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptySubmitForm, PostForm
 from app.db import db
-from app.models import User
+from app.models import User, Post
 
 
 @app.before_request
@@ -19,26 +19,69 @@ def add_last_seen_to_user() -> None:
         db.session.commit()
 
 
-@app.route("/")
-@app.route("/index")
+@app.route("/", methods=['GET', 'POST'])
+@app.route("/index", methods=['GET', 'POST'])
 @login_required
-def index() -> str:
-    user = {"username": "Pablo"}
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
+def index() -> str | Response:
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash("Your post is now live!")
+        return redirect(url_for("index"))
+
+    page = request.args.get("page", 1, type=int)
+    query = current_user.following_posts()
+    posts = db.paginate(
+        query,
+        page=page,
+        per_page=app.config["POSTS_PER_PAGE"],
+        error_out=False
+    )
+    next_url = (
+        url_for("index", page=posts.next_num)
+        if posts.has_next else None
+    )
+    prev_url = (
+        url_for("index", page=posts.prev_num)
+        if posts.has_prev else None
+    )
     return render_template(
         "index.html",
         title="Home",
-        user=user,
-        posts=posts
+        posts=posts.items,
+        form=form,
+        next_url=next_url,
+        prev_url=prev_url
+    )
+
+
+@app.route('/explore')
+@login_required
+def explore() -> str:
+    page = request.args.get("page", 1, type=int)
+    query = sa.select(Post).order_by(Post.timestamp.desc())
+    posts = db.paginate(
+        query,
+        page=page,
+        per_page=app.config["POSTS_PER_PAGE"],
+        error_out=False
+    )
+    next_url = (
+        url_for("explore", page=posts.next_num)
+        if posts.has_next else None
+    )
+    prev_url = (
+        url_for("explore", page=posts.prev_num)
+        if posts.has_prev else None
+    )
+    return render_template(
+        "index.html",
+        title="Explore",
+        posts=posts,
+        next_url=next_url,
+        prev_url=prev_url
     )
 
 
@@ -104,16 +147,31 @@ def user(username: str) -> str:
     stmt = sa.select(User).where(User.username == username)
     user = db.first_or_404(stmt)
 
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'},
-    ]
+    page = request.args.get("page", 1, type=int)
+
+    query = user.posts.select().order_by(Post.timestamp.desc())
+    posts = db.paginate(
+        query,
+        page=page,
+        per_page=app.config["POSTS_PER_PAGE"],
+        error_out=False
+    )
+    next_url = (
+        url_for("user", username=user.username, page=posts.next_num)
+        if posts.has_next else None
+    )
+    prev_url = (
+        url_for("user", username=user.username, page=posts.prev_num)
+        if posts.has_prev else None
+    )
 
     return render_template(
         "user.html",
         user=user,
-        posts=posts,
-        form=form
+        posts=posts.items,
+        form=form,
+        next_url=next_url,
+        prev_url=prev_url
     )
 
 
