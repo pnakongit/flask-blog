@@ -57,6 +57,34 @@ def index() -> str | Response:
     )
 
 
+@app.route('/explore')
+@login_required
+def explore() -> str:
+    page = request.args.get("page", 1, type=int)
+    query = sa.select(Post).order_by(Post.timestamp.desc())
+    posts = db.paginate(
+        query,
+        page=page,
+        per_page=app.config["POSTS_PER_PAGE"],
+        error_out=False
+    )
+    next_url = (
+        url_for("explore", page=posts.next_num)
+        if posts.has_next else None
+    )
+    prev_url = (
+        url_for("explore", page=posts.prev_num)
+        if posts.has_prev else None
+    )
+    return render_template(
+        "index.html",
+        title="Explore",
+        posts=posts,
+        next_url=next_url,
+        prev_url=prev_url
+    )
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login() -> str | Response:
     if current_user.is_authenticated:
