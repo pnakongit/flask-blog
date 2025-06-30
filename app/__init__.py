@@ -2,7 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from app.db import db
-from app.extensions import login, mail
+from app.extensions import login, mail, moment
 from app.logging_setup import setup_logging
 
 app = Flask(__name__)
@@ -15,6 +15,8 @@ login.init_app(app)
 login.login_view = app.config["LOGIN_VIEW"]
 
 mail.init_app(app)
+
+moment.init_app(app)
 
 setup_logging(app)
 
