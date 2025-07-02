@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,8 +14,10 @@ class Config:
     )
     SQLALCHEMY_ECHO = True
     LOGIN_VIEW = "login"
+    LOGIN_MESSAGE = "Please log in to access this page"
     POSTS_PER_PAGE = 3
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
     MAIL_PORT = os.environ.get("MAIL_PORT")
     JWT_EXPIRES_IN = 600
     SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
+    LANGUAGES = ["en", "uk"]
