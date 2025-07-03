@@ -6,6 +6,7 @@ from flask import render_template, flash, url_for, redirect, request, g
 from flask_login import current_user, login_user, logout_user, login_required
 from flask.wrappers import Response
 from flask_babel import _, get_locale  # NOQA
+from langdetect import detect, LangDetectException
 
 from app import app
 from app.forms import (
@@ -40,7 +41,13 @@ def set_locale() -> None:
 def index() -> str | Response:
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
+        try:
+            language = detect(form.post.data)
+        except LangDetectException:
+            language = ""
+
+        post = Post(body=form.post.data, author=current_user, language=language)
+
         db.session.add(post)
         db.session.commit()
         flash(_("Your post is now live!"))
