@@ -21,3 +21,5 @@ class Config:
     JWT_EXPIRES_IN = 600
     SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
     LANGUAGES = ["en", "uk"]
+    MS_TRANSLATOR_KEY = os.environ.get("MS_TRANSLATOR_KEY")
+    MS_TRANSLATOR_REGION = os.environ.get("MS_TRANSLATOR_REGION")
