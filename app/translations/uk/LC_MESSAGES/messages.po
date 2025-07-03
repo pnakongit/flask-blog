@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-02 18:06+0300\n"
+"POT-Creation-Date: 2025-07-03 19:51+0300\n"
 "PO-Revision-Date: 2025-07-01 17:49+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -75,57 +75,69 @@ msgstr "Напиши про що ти думаєш"
 msgid "Request Password Reset"
 msgstr "Скинути пароль"
 
-#: app/routes.py:46
+#: app/routes.py:54
 msgid "Your post is now live!"
 msgstr "Ваш пост опублікований)"
 
-#: app/routes.py:123
+#: app/routes.py:131
 msgid "Invalid username or password"
 msgstr "Невірний логін або пароль"
 
-#: app/routes.py:151
+#: app/routes.py:159
 msgid "Congratulations, you are now a registered user!"
 msgstr "Вітаю, ви зареєстрований користувач!"
 
-#: app/routes.py:201
+#: app/routes.py:209
 msgid "Your changes have been saved."
 msgstr "Зміни було збережено."
 
-#: app/routes.py:226
+#: app/routes.py:234
 msgid "Check your email for the instructions to reset your password"
 msgstr "Перевірте ваш email та слідуйте інструкціям."
 
-#: app/routes.py:246
+#: app/routes.py:254
 msgid "Your password has been reset."
 msgstr "Ваш пароль був скинутий"
 
-#: app/routes.py:265 app/routes.py:290
+#: app/routes.py:273 app/routes.py:298
 #, python-format
 msgid "User %(username)s not found."
 msgstr "Користувача %(username)s не знайдено."
 
-#: app/routes.py:269
+#: app/routes.py:277
 msgid "You cannot follow yourself!"
 msgstr "Ви не можете підписвтися на себе!"
 
-#: app/routes.py:274
+#: app/routes.py:282
 #, python-format
 msgid "You are following %(username)s!"
 msgstr "Привіт, %(username)s!"
 
-#: app/routes.py:294
+#: app/routes.py:302
 msgid "You cannot unfollow yourself!"
 msgstr "Ви не можете відписатися від себе!"
 
-#: app/routes.py:299
+#: app/routes.py:307
 #, python-format
 msgid "You are not following %(username)s!"
 msgstr "Ви не підписані на %(username)s!"
+
+#: app/translate.py:15
+msgid "Error: the translation service is not configured."
+msgstr "Помилка: сервер не налаштованний"
+
+#: app/translate.py:36
+msgid "Error: the translation service failed."
+msgstr "Помилка: переклад тимчасово недоступний"
 
 #: app/templates/_post.html:14
 #, python-format
 msgid "%(username)s said %(when)s"
 msgstr "%(username)s публікує %(when)s"
+
+#: app/templates/_post.html:25
+msgid "Translate"
+msgstr "Перекласти"
 
 #: app/templates/base.html:28
 msgid "Home"
@@ -139,11 +151,11 @@ msgstr "Всі публікації"
 msgid "Login"
 msgstr "Увійти"
 
-#: app/templates/base.html:41
+#: app/templates/base.html:42
 msgid "Profile"
 msgstr "Профіль користувача"
 
-#: app/templates/base.html:44
+#: app/templates/base.html:45
 msgid "Logout"
 msgstr "Вийти"
 
