@@ -21,6 +21,7 @@ from app.forms import (
 from app.db import db
 from app.models import User, Post
 from app.email import send_password_reset_email
+from app.translate import translate
 
 
 @app.before_request
@@ -307,3 +308,14 @@ def unfollow(username: str) -> str | Response:
         return redirect(url_for("user", username=username))
 
     return redirect(url_for("index"))
+
+
+@app.route("/translate", methods=["POST"])
+@login_required
+def translate_text() -> dict[str, str]:
+    data = request.get_json()
+    return {
+        "text": translate(data["text"],
+                          data['source_language'],
+                          data['dest_language'])
+    }
