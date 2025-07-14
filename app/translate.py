@@ -1,15 +1,15 @@
 from functools import lru_cache
 
 import requests
+from flask import current_app
 from flask_babel import _  # NOQA
-from app import app
 
 
 @lru_cache(maxsize=512)
 def translate(text: str, source_language: str, dest_language: str) -> str:
     url = "https://api.cognitive.microsofttranslator.com/translate"
-    api_key = app.config.get("MS_TRANSLATOR_KEY")
-    api_region = app.config.get("MS_TRANSLATOR_REGION")
+    api_key = current_app.config.get("MS_TRANSLATOR_KEY")
+    api_region = current_app.config.get("MS_TRANSLATOR_REGION")
 
     if api_key is None or api_region is None:
         return _('Error: the translation service is not configured.')

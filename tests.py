@@ -1,19 +1,18 @@
 import os
 
-os.environ["SQLALCHEMY_DATABASE_URI"] = "sqlite://"  # NOQA
-
 from datetime import datetime, timezone, timedelta
 import unittest
 from werkzeug.security import generate_password_hash
-from app import app, db
+from app import db, create_app
 from app.models import User, Post
+from config import TestConfig
 
 
 class UserModelCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app_context = app.app_context()
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
         self.app_context.push()
-        print(db)
         db.create_all()
 
     def tearDown(self) -> None:

@@ -8,7 +8,7 @@ from flask import Flask
 
 
 def setup_logging(app: Flask) -> None:
-    if not app.debug:
+    if not app.debug and not app.testing:
         if not os.path.exists("logs"):
             os.mkdir("logs")
         file_handler = RotatingFileHandler("logs/blog.log", maxBytes=10240,
