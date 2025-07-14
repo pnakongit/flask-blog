@@ -1,6 +1,8 @@
 import os
+from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, ".env"))
 
 
 class Config:
@@ -12,8 +14,7 @@ class Config:
         "SQLALCHEMY_DATABASE_URI",
         "sqlite:///" + os.path.join(basedir, 'app.db')
     )
-    SQLALCHEMY_ECHO = True
-    LOGIN_VIEW = "login"
+    LOGIN_VIEW = "auth.login"
     LOGIN_MESSAGE = "Please log in to access this page"
     POSTS_PER_PAGE = 3
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
@@ -23,3 +24,8 @@ class Config:
     LANGUAGES = ["en", "uk"]
     MS_TRANSLATOR_KEY = os.environ.get("MS_TRANSLATOR_KEY")
     MS_TRANSLATOR_REGION = os.environ.get("MS_TRANSLATOR_REGION")
+
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite://"

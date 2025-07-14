@@ -1,10 +1,9 @@
 from threading import Thread
 
-from flask import Flask, render_template
+from flask import Flask, current_app
 from flask_mail import Message
 
-from app import app, mail
-from app.models import User
+from app.extensions import mail
 
 
 def send_async_email(app: Flask, msg: Message) -> None:
@@ -23,16 +22,7 @@ def send_email(
     msg.body = text_body
     msg.html = html_body
 
-    Thread(target=send_async_email, args=(app, msg)).start()
-
-
-
-def send_password_reset_email(user: User) -> None:
-    token = user.get_reset_password_token()
-    send_email("[Blog] Reset Your Password",
-               sender=app.config["SENDER_EMAIL"],
-               recipients=[user.email],
-               text_body=render_template("emails/reset_password.txt",
-                                         user=user, token=token),
-               html_body=render_template("emails/reset_password.html",
-                                         user=user, token=token))
+    Thread(
+        target=send_async_email,
+        args=(current_app._get_current_object(), msg)
+    ).start()
