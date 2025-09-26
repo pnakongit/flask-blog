@@ -3,12 +3,20 @@ import click
 
 from flask import Blueprint
 
+from app.models import Post
+
 bp = Blueprint("cli", __name__, cli_group=None)
 
 
 @bp.cli.group()
 def translate() -> None:
     """Translation and localization commands."""
+    pass
+
+
+@bp.cli.group()
+def es_search() -> None:
+    """Elasticsearch search commands."""
     pass
 
 
@@ -41,3 +49,8 @@ def init(lang) -> None:
         raise RuntimeError("init command failed")
     if os.path.exists("messages.pot"):
         os.remove('messages.pot')
+
+
+@es_search.command()
+def reindex() -> None:
+    Post.reindex()

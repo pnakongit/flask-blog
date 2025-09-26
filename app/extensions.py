@@ -1,9 +1,12 @@
-from flask import current_app, request
+from typing import Any
+
+from flask import Flask, current_app, request
 from flask_babel import Babel
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_migrate import Migrate
+from elasticsearch import Elasticsearch
 
 from app.db import db
 from app.models import User
@@ -14,6 +17,7 @@ moment = Moment()
 babel = Babel()
 migrate = Migrate()
 
+
 @login.user_loader
 def load_user(id_: str) -> User:
     return db.session.get(User, int(id_))
@@ -21,4 +25,15 @@ def load_user(id_: str) -> User:
 
 def get_locale() -> str:
     return request.accept_languages.best_match(current_app.config["LANGUAGES"])
-    # return "uk"
+
+
+class ElasticsearchClient:
+    es_client = None
+
+    def init_app(self, app: Flask) -> None:
+        es_client_ = Elasticsearch(app.config["ELASTICSEARCH_URL"])
+        app.elasticsearch = es_client_
+        self.es_client = es_client_
+
+
+es_client = ElasticsearchClient()

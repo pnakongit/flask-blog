@@ -10,7 +10,8 @@ from langdetect import detect, LangDetectException
 from app.main.forms import (
     EditProfileForm,
     EmptySubmitForm,
-    PostForm
+    PostForm,
+    SearchForm
 )
 from app.db import db
 from app.models import User, Post
@@ -28,6 +29,12 @@ def add_last_seen_to_user() -> None:
 @bp.before_app_request
 def set_locale() -> None:
     g.locale = str(get_locale())
+
+
+@bp.before_app_request
+def add_search_form_to_g() -> None:
+    if current_user.is_authenticated:
+        g.search_form = SearchForm()
 
 
 @bp.route("/", methods=['GET', 'POST'])
@@ -219,3 +226,29 @@ def translate_text() -> dict[str, str]:
                           data['source_language'],
                           data['dest_language'])
     }
+
+
+@bp.route("/search", methods=["GET"])
+@login_required
+def search() -> Response | str:
+    if not g.search_form.validate():
+        return redirect(url_for("main.index"))
+
+    search_data = g.search_form.q.data
+    page = request.args.get("page", 1, type=int)
+
+    posts, total = Post.search(
+        search_data,
+        page,
+        current_app.config['POSTS_PER_PAGE']
+    )
+    next_url = url_for('main.search', q=g.search_form.q.data, page=page + 1) \
+        if total > page * current_app.config['POSTS_PER_PAGE'] else None
+    prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
+        if page > 1 else None
+
+    return render_template(
+        "search.html",
+        title=_("Search"), posts=posts,
+        next_url=next_url, prev_url=prev_url
+    )

@@ -11,6 +11,7 @@ from flask_login import UserMixin
 from flask import current_app
 
 from app import db
+from app.search import SearchableMixin
 
 followers = sa.Table(
     'followers',
@@ -120,7 +121,9 @@ class User(UserMixin, db.Model):
         return db.session.get(User, user_id)
 
 
-class Post(db.Model):
+class Post(db.Model, SearchableMixin):
+    searchable_fields = ["body"]
+
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     body: so.Mapped[str] = so.mapped_column(sa.String(140))
     timestamp: so.Mapped[datetime] = so.mapped_column(
@@ -134,3 +137,7 @@ class Post(db.Model):
 
     def __repr__(self) -> str:
         return f"<Post {self.body}>"
+
+
+db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)

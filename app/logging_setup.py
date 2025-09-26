@@ -9,6 +9,9 @@ from flask import Flask
 
 def setup_logging(app: Flask) -> None:
     if not app.debug and not app.testing:
+
+        app.logger.setLevel(logging.INFO)
+
         if not os.path.exists("logs"):
             os.mkdir("logs")
         file_handler = RotatingFileHandler("logs/blog.log", maxBytes=10240,
@@ -18,11 +21,21 @@ def setup_logging(app: Flask) -> None:
         )
 
         formatter.converter = time.gmtime
-
         file_handler.setFormatter(formatter)
         file_handler.setLevel(logging.INFO)
 
         app.logger.addHandler(file_handler)
 
-        app.logger.setLevel(logging.INFO)
+        # Setup logger for elasticsearch
+        es_logger = logging.getLogger("app.elasticsearch")
+        es_logger.setLevel(logging.INFO)
+        es_logger.propagate = False
+
+        es_handler = logging.StreamHandler()
+        es_formatter = logging.Formatter("[%(asctime)s] %(levelname)s [%(name)s] - %(message)s")
+        es_formatter.converter = time.gmtime
+        es_handler.setFormatter(es_formatter)
+        es_handler.setLevel(logging.INFO)
+        es_logger.addHandler(es_handler)
+
         app.logger.info('Blog startup')

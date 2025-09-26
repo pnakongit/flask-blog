@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-14 21:38+0300\n"
+"POT-Creation-Date: 2025-09-26 19:49+0300\n"
 "PO-Revision-Date: 2025-07-01 17:49+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -55,7 +55,7 @@ msgstr "Скинути пароль"
 msgid "Register"
 msgstr "Реєстрація"
 
-#: app/auth/forms.py:30 app/main/forms.py:27
+#: app/auth/forms.py:30 app/main/forms.py:28
 msgid "That username is taken. Please choose a different one."
 msgstr "Цей логін зайнятий. Вибиріть інший"
 
@@ -83,49 +83,53 @@ msgstr "Перевірте ваш email та слідуйте інструкці
 msgid "Your password has been reset."
 msgstr "Ваш пароль був скинутий"
 
-#: app/main/forms.py:14
+#: app/main/forms.py:15
 msgid "Username "
 msgstr "Логін "
 
-#: app/main/forms.py:15
+#: app/main/forms.py:16
 msgid "About me"
 msgstr "Про мене"
 
-#: app/main/forms.py:16 app/main/forms.py:31 app/main/forms.py:36
+#: app/main/forms.py:17 app/main/forms.py:32 app/main/forms.py:37
 msgid "Submit"
 msgstr "Підтвердити"
 
-#: app/main/forms.py:35
+#: app/main/forms.py:36
 msgid "Say something"
 msgstr "Напиши про що ти думаєш"
 
-#: app/main/routes.py:48
+#: app/main/forms.py:41 app/main/routes.py:252
+msgid "Search"
+msgstr "Пошук"
+
+#: app/main/routes.py:55
 msgid "Your post is now live!"
 msgstr "Ваш пост опублікований)"
 
-#: app/main/routes.py:149
+#: app/main/routes.py:156
 msgid "Your changes have been saved."
 msgstr "Зміни було збережено."
 
-#: app/main/routes.py:173 app/main/routes.py:198
+#: app/main/routes.py:180 app/main/routes.py:205
 #, python-format
 msgid "User %(username)s not found."
 msgstr "Користувача %(username)s не знайдено."
 
-#: app/main/routes.py:177
+#: app/main/routes.py:184
 msgid "You cannot follow yourself!"
 msgstr "Ви не можете підписвтися на себе!"
 
-#: app/main/routes.py:182
+#: app/main/routes.py:189
 #, python-format
 msgid "You are following %(username)s!"
 msgstr "Привіт, %(username)s!"
 
-#: app/main/routes.py:202
+#: app/main/routes.py:209
 msgid "You cannot unfollow yourself!"
 msgstr "Ви не можете відписатися від себе!"
 
-#: app/main/routes.py:207
+#: app/main/routes.py:214
 #, python-format
 msgid "You are not following %(username)s!"
 msgstr "Ви не підписані на %(username)s!"
@@ -147,15 +151,15 @@ msgstr "Домашня сторінка"
 msgid "Explore"
 msgstr "Всі публікації"
 
-#: app/templates/base.html:37
+#: app/templates/base.html:46
 msgid "Login"
 msgstr "Увійти"
 
-#: app/templates/base.html:42
+#: app/templates/base.html:51
 msgid "Profile"
 msgstr "Профіль користувача"
 
-#: app/templates/base.html:45
+#: app/templates/base.html:54
 msgid "Logout"
 msgstr "Вийти"
 
@@ -168,13 +172,17 @@ msgstr "Редагувати профіль"
 msgid "Hi, %(username)s!"
 msgstr "Привіт, %(username)s!"
 
-#: app/templates/index.html:16
+#: app/templates/index.html:16 app/templates/search.html:12
 msgid "Newer posts"
 msgstr "Нові пости"
 
-#: app/templates/index.html:21
+#: app/templates/index.html:21 app/templates/search.html:17
 msgid "Older posts"
 msgstr "Старі пости"
+
+#: app/templates/search.html:4
+msgid "Search Results"
+msgstr "Результати пошуку"
 
 #: app/templates/user.html:8
 msgid "User"

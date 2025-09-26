@@ -2,7 +2,7 @@ from flask import Flask
 
 from app.db import db
 from app.logging_setup import setup_logging
-from app.extensions import login, mail, moment, babel, get_locale, migrate
+from app.extensions import login, mail, moment, babel, get_locale, migrate, es_client
 from config import Config
 
 
@@ -12,6 +12,7 @@ def create_app(config_class=Config) -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
+
     login.init_app(app)
     login.login_view = app.config["LOGIN_VIEW"]
     login.login_message = app.config["LOGIN_MESSAGE"]
@@ -20,6 +21,7 @@ def create_app(config_class=Config) -> Flask:
     moment.init_app(app)
     babel.init_app(app, locale_selector=get_locale)
     setup_logging(app)
+    es_client.init_app(app)
 
     from app.errors import bp as errors_bp
     from app.auth import bp as auth_bp
