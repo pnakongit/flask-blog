@@ -1,11 +1,26 @@
+from time import time
 from datetime import datetime, timezone
+from hashlib import md5
 from typing import Optional
-from werkzeug.security import generate_password_hash, check_password_hash
+
+import jwt
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from flask import current_app
 
 from app import db
+from app.search import SearchableMixin
+
+followers = sa.Table(
+    'followers',
+    db.metadata,
+    sa.Column('follower_id', sa.Integer, sa.ForeignKey('user.id'),
+              primary_key=True),
+    sa.Column('followed_id', sa.Integer, sa.ForeignKey('user.id'),
+              primary_key=True)
+)
 
 
 class User(UserMixin, db.Model):
@@ -13,8 +28,24 @@ class User(UserMixin, db.Model):
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+    about_me: so.Mapped[str | None] = so.mapped_column(sa.String(256))
+    last_seen: so.Mapped[datetime | None] = so.mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
 
     posts: so.WriteOnlyMapped["Post"] = so.relationship(back_populates="author")
+    following: so.WriteOnlyMapped["User"] = so.relationship(
+        secondary="followers",
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        back_populates="followers"
+    )
+    followers: so.WriteOnlyMapped["User"] = so.relationship(
+        secondary="followers",
+        primaryjoin=(followers.c.followed_id == id),
+        secondaryjoin=(followers.c.follower_id == id),
+        back_populates="following"
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
@@ -25,8 +56,74 @@ class User(UserMixin, db.Model):
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
 
+    def avatar(self, size: int) -> str:
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
-class Post(db.Model):
+    def follow(self, user: "User") -> None:
+        if not self.is_following(user):
+            self.following.add(user)
+
+    def unfollow(self, user: "User") -> None:
+        if self.is_following(user):
+            self.following.remove(user)
+
+    def is_following(self, user: "User") -> bool:
+        stmt = self.following.select().where(User.id == user.id)
+        return db.session.scalar(stmt) is not None
+
+    def following_count(self) -> int | None:
+        query = sa.select(sa.func.count()).select_from(
+            self.following.select().subquery())
+        return db.session.scalar(query)
+
+    def followers_count(self) -> int | None:
+        query = sa.select(sa.func.count()).select_from(
+            self.followers.select().subquery())
+        return db.session.scalar(query)
+
+    def following_posts(self):
+        Author = so.aliased(User)  # NOQA
+        Follower = so.aliased(User)  # NOQA
+        return (
+            sa.select(Post)
+            .join(Post.author.of_type(Author))
+            .join(Author.followers.of_type(Follower), isouter=True)
+            .where(
+                sa.or_(
+                    Follower.id == self.id,
+                    Author.id == self.id,
+                )
+            )
+            .group_by(Post)
+            .order_by(Post.timestamp.desc())
+        )
+
+    def get_reset_password_token(self, expires_in: Optional[int] = None) -> str:
+        if expires_in is None:
+            expires_in = current_app.config["JWT_EXPIRES_IN"]
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_in},
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256"
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token: str) -> Optional["User"]:
+        try:
+            user_id = jwt.decode(
+                token,
+                current_app.config["SECRET_KEY"],
+                algorithms=["HS256"]
+            )["reset_password"]
+        except (jwt.InvalidTokenError, jwt.ExpiredSignatureError):
+            return
+        return db.session.get(User, user_id)
+
+
+class Post(db.Model, SearchableMixin):
+    searchable_fields = ["body"]
+
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     body: so.Mapped[str] = so.mapped_column(sa.String(140))
     timestamp: so.Mapped[datetime] = so.mapped_column(
@@ -34,8 +131,13 @@ class Post(db.Model):
         default=lambda: datetime.now(timezone.utc)
     )
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    language: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5))
 
     author: so.Mapped[User] = so.relationship(back_populates="posts")
 
     def __repr__(self) -> str:
         return f"<Post {self.body}>"
+
+
+db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
