@@ -44,7 +44,7 @@ class ElasticsearchService:
             return [], 0
         search = es_client.search(
             index=index,
-            query={"multi_match": {"query": query, "fields": ["*"]}},
+            body={"query": {"multi_match": {"query": query, "fields": ["*"]}}},
             from_=(page - 1) * per_page,
             size=per_page)
         ids = [int(hit['_id']) for hit in search['hits']['hits']]
