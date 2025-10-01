@@ -4,6 +4,8 @@ import click
 from flask import Blueprint
 
 from app.models import Post
+from app.extensions import db
+from app.search import SearchableMixin
 
 bp = Blueprint("cli", __name__, cli_group=None)
 
@@ -54,3 +56,11 @@ def init(lang) -> None:
 @es_search.command()
 def reindex() -> None:
     Post.reindex()
+
+
+@es_search.command()
+def init_indexes() -> None:
+    for model in db.Model.registry.mappers:
+        model_class = model.class_
+        if issubclass(model_class, SearchableMixin):
+            model_class.create_index()
