@@ -18,6 +18,14 @@ class ElasticsearchService:
             self.es_client = current_app.elasticsearch
         return self.es_client
 
+    def create_index(self, index_name: str) -> None:
+        es_client = self.get_es_client()
+        if es_client is None:
+            return None
+        if not es_client.indices.exists(index=index_name):
+            es_client.indices.create(index=index_name)
+            self.logger.info("Index [%s] created.", index_name)
+
     def add_to_index(self, index: str, doc_id: int, document: dict) -> None:
         es_client = self.get_es_client()
         if es_client is None:
@@ -48,12 +56,11 @@ class ElasticsearchService:
             index=index,
             body={
                 "query": {"match_all": {}}
-            },
-            ignore=[404]
+            }
         )
 
     def stream_documents_to_index(self, doc_stream: Generator, chunk_size: int = 1000) -> None:
-        error_count = 1
+        error_count = 0
         for status_ok, response in helpers.streaming_bulk(
                 client=self.get_es_client(),
                 actions=doc_stream,
@@ -172,3 +179,7 @@ class SearchableMixin:
             doc_stream,
             chunk_size=1000
         )
+
+    @classmethod
+    def create_index(cls) -> None:
+        cls.es_service.create_index(cls.get_index_name())
