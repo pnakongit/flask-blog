@@ -30,7 +30,7 @@ class ElasticsearchService:
         es_client = self.get_es_client()
         if es_client is None:
             return
-        es_client.index(index=index, id=doc_id, document=document)
+        es_client.index(index=index, id=doc_id, body=document)
 
     def remove_from_index(self, index: str, doc_id: int) -> None:
         es_client = self.get_es_client()
