@@ -1,5 +1,3 @@
-from typing import Any
-
 from flask import Flask, current_app, request
 from flask_babel import Babel
 from flask_login import LoginManager
@@ -31,9 +29,11 @@ class ElasticsearchClient:
     es_client = None
 
     def init_app(self, app: Flask) -> None:
-        es_client_ = Elasticsearch(app.config["ELASTICSEARCH_URL"])
-        app.elasticsearch = es_client_
-        self.es_client = es_client_
+        elasticsearch_url = app.config.get("ELASTICSEARCH_URL")
+        if elasticsearch_url is not None:
+            es_client_ = Elasticsearch(app.config["ELASTICSEARCH_URL"])
+            self.es_client = es_client_
+        app.elasticsearch = self.es_client
 
 
 es_client = ElasticsearchClient()

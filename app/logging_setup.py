@@ -9,22 +9,24 @@ from flask import Flask
 
 def setup_logging(app: Flask) -> None:
     if not app.debug and not app.testing:
-
         app.logger.setLevel(logging.INFO)
 
-        if not os.path.exists("logs"):
-            os.mkdir("logs")
-        file_handler = RotatingFileHandler("logs/blog.log", maxBytes=10240,
-                                           backupCount=10)
+        if app.config.get("LOG_TO_STDOUT"):
+            app_handler = logging.StreamHandler()
+        else:
+            if not os.path.exists("logs"):
+                os.mkdir("logs")
+            app_handler = RotatingFileHandler("logs/blog.log", maxBytes=10240,
+                                               backupCount=10)
         formatter = logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
         )
 
         formatter.converter = time.gmtime
-        file_handler.setFormatter(formatter)
-        file_handler.setLevel(logging.INFO)
+        app_handler.setFormatter(formatter)
+        app_handler.setLevel(logging.INFO)
 
-        app.logger.addHandler(file_handler)
+        app.logger.addHandler(app_handler)
 
         # Setup logger for elasticsearch
         es_logger = logging.getLogger("app.elasticsearch")

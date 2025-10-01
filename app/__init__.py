@@ -1,14 +1,17 @@
+import os
+
 from flask import Flask
 
 from app.db import db
 from app.logging_setup import setup_logging
 from app.extensions import login, mail, moment, babel, get_locale, migrate, es_client
-from config import Config
 
 
-def create_app(config_class=Config) -> Flask:
+def create_app(config_class_name=None) -> Flask:
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    if config_class_name is None:
+        config_class_name = os.environ.get("FLASK_CONFIG_NAME", "config.Config")
+    app.config.from_object(config_class_name)
 
     db.init_app(app)
     migrate.init_app(app, db)
