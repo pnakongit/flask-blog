@@ -1,1 +1,1 @@
-web: flask db upgrade; flask translate compile; gunicorn blog:app
+web: flask db upgrade; flask es-search init-indexes; flask translate compile; gunicorn blog:app
