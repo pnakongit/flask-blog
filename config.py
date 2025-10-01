@@ -2,14 +2,11 @@ import os
 from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, ".env"))
+load_dotenv(os.path.join(basedir, ".flaskenv"))
 
 
 class Config:
-    SECRET_KEY = os.environ.get(
-        "SECRET_KEY",
-        "you-will-never-guess"
-    )
+    SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_URI",
         "sqlite:///" + os.path.join(basedir, 'app.db')
@@ -27,6 +24,13 @@ class Config:
     ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL")
 
 
+class HerokuConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "").replace("postgres://", "postgresql://", 1)
+    LOG_TO_STDOUT = True
+    ELASTICSEARCH_URL = os.environ.get("SEARCHBOX_URL")
+
+
 class TestConfig(Config):
     TESTING = True
+    SECRET_KEY = "testing"
     SQLALCHEMY_DATABASE_URI = "sqlite://"
