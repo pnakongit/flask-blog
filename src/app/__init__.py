@@ -2,9 +2,9 @@ import os
 
 from flask import Flask
 
-from src.app.db import db
-from src.app.logging_setup import setup_logging
-from src.app.extensions import login, mail, moment, babel, get_locale, migrate, es_client
+from app.db import db
+from app.logging_setup import setup_logging
+from app.extensions import login, mail, moment, babel, get_locale, migrate, es_client
 
 
 def create_app(config_class_name=None) -> Flask:
@@ -26,10 +26,10 @@ def create_app(config_class_name=None) -> Flask:
     setup_logging(app)
     es_client.init_app(app)
 
-    from src.app.errors import bp as errors_bp
-    from src.app.auth import bp as auth_bp
-    from src.app.main import bp as main_bp
-    from src.app.cli import bp as cli_bp
+    from app.errors import bp as errors_bp
+    from app.auth import bp as auth_bp
+    from app.main import bp as main_bp
+    from app.cli import bp as cli_bp
 
     app.register_blueprint(errors_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -39,4 +39,4 @@ def create_app(config_class_name=None) -> Flask:
     return app
 
 
-from src.app import models
+from app import models  # NOQA
