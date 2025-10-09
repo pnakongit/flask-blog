@@ -1,15 +1,18 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, ".flaskenv"))
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(PROJECT_DIR, ".flaskenv"))
 
 
 class Config:
     SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_URI",
-        "sqlite:///" + os.path.join(basedir, 'app.db')
+        "sqlite:///" + os.path.join(PROJECT_DIR, 'app.db')
     )
     LOGIN_VIEW = "auth.login"
     LOGIN_MESSAGE = "Please log in to access this page"
