@@ -14,6 +14,7 @@ class Config:
         "SQLALCHEMY_DATABASE_URI",
         "sqlite:///" + os.path.join(PROJECT_DIR, 'app.db')
     )
+    SQLALCHEMY_MIGRATE_REPO = "src/migrations"
     LOGIN_VIEW = "auth.login"
     LOGIN_MESSAGE = "Please log in to access this page"
     POSTS_PER_PAGE = 3
