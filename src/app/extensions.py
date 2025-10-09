@@ -6,8 +6,8 @@ from flask_moment import Moment
 from flask_migrate import Migrate
 from elasticsearch import Elasticsearch
 
-from src.app.db import db
-from src.app.models import User
+from app.db import db
+from app.models import User
 
 login = LoginManager()
 mail = Mail()

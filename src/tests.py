@@ -1,8 +1,8 @@
 from datetime import datetime, timezone, timedelta
 import unittest
 from werkzeug.security import generate_password_hash
-from src.app import db, create_app
-from src.app import User, Post
+from app import db, create_app
+from app.models import User, Post
 
 
 class UserModelCase(unittest.TestCase):

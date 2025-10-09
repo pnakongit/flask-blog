@@ -10,8 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask import current_app
 
-from src.app import db
-from src.app.search import SearchableMixin
+from app import db
+from app.search import SearchableMixin
 
 followers = sa.Table(
     'followers',

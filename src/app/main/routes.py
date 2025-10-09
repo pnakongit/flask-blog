@@ -7,16 +7,16 @@ from flask.wrappers import Response
 from flask_babel import _, get_locale  # NOQA
 from langdetect import detect, LangDetectException
 
-from src.app.main.forms import (
+from app.main.forms import (
     EditProfileForm,
     EmptySubmitForm,
     PostForm,
     SearchForm
 )
-from src.app.db import db
-from src.app.models import User, Post
-from src.app.translate import translate
-from src.app.main import bp
+from app.db import db
+from app.models import User, Post
+from app.translate import translate
+from app.main import bp
 
 
 @bp.before_app_request
@@ -72,7 +72,7 @@ def index() -> str | Response:
         if posts.has_prev else None
     )
     return render_template(
-        "../templates/index.html",
+        "index.html",
         title="Home",
         posts=posts.items,
         form=form,
@@ -101,7 +101,7 @@ def explore() -> str:
         if posts.has_prev else None
     )
     return render_template(
-        "../templates/index.html",
+        "index.html",
         title="Explore",
         posts=posts,
         next_url=next_url,
@@ -136,7 +136,7 @@ def user(username: str) -> str:
     )
 
     return render_template(
-        "../templates/user.html",
+        "user.html",
         user=user,
         posts=posts.items,
         form=form,
@@ -161,7 +161,7 @@ def edit_profile() -> str | Response:
         form.about_me.data = current_user.about_me
 
     return render_template(
-        "../templates/edit_profile.html",
+        "edit_profile.html",
         title="Edit Profile",
         form=form
     )
@@ -248,7 +248,7 @@ def search() -> Response | str:
         if page > 1 else None
 
     return render_template(
-        "../templates/search.html",
+        "search.html",
         title=_("Search"), posts=posts,
         next_url=next_url, prev_url=prev_url
     )

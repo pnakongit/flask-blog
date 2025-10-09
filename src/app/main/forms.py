@@ -7,8 +7,8 @@ from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, ValidationError
 from flask_babel import _, lazy_gettext as _l
 
-from src.app.db import db
-from src.app.models import User
+from app.db import db
+from app.models import User
 
 
 class EditProfileForm(FlaskForm):

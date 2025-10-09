@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from flask import current_app
 from elasticsearch import Elasticsearch, helpers
 
-from src.app.db import db
+from app.db import db
 
 
 class ElasticsearchService:
