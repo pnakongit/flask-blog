@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from src.app import create_app, db
-from src.app import User, Post
+from app import create_app, db
+from app.models import User, Post
 
 app = create_app()
 
