@@ -12,7 +12,7 @@ class Config:
     SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_URI",
-        "sqlite:///" + os.path.join(PROJECT_DIR, 'app.db')
+        "sqlite:///" + str(PROJECT_DIR.joinpath("data", "app.db")),
     )
     SQLALCHEMY_MIGRATE_REPO = "src/migrations"
     LOGIN_VIEW = "auth.login"
