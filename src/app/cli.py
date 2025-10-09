@@ -25,9 +25,9 @@ def es_search() -> None:
 @translate.command()
 def update() -> None:
     """Update all languages."""
-    if os.system("pybabel extract -F babel.cfg -k _l -o messages.pot .") != 0:
+    if os.system("pybabel extract -F src/babel.cfg -k _l -o messages.pot .") != 0:
         raise RuntimeError("extract command failed")
-    if os.system("pybabel update -i messages.pot -d app/translations") != 0:
+    if os.system("pybabel update -i messages.pot -d src/app/translations") != 0:
         raise RuntimeError("update command failed")
     if os.path.exists("messages.pot"):
         os.remove('messages.pot')
@@ -36,7 +36,7 @@ def update() -> None:
 @translate.command()
 def compile() -> None:
     """Compile all languages."""
-    if os.system("pybabel compile -d app/translations") != 0:
+    if os.system("pybabel compile -d src/app/translations") != 0:
         raise RuntimeError("compile command failed")
 
 
@@ -44,10 +44,10 @@ def compile() -> None:
 @click.argument('lang')
 def init(lang) -> None:
     """Initialize a new language."""
-    if os.system("pybabel extract -F babel.cfg -k _l -o messages.pot ."):
+    if os.system("pybabel extract -F src/babel.cfg -k _l -o messages.pot ."):
         raise RuntimeError('extract command failed')
     if os.system(
-            "pybabel init -i messages.pot -d app/translations -l " + lang):
+            "pybabel init -i messages.pot -d src/app/translations -l " + lang):
         raise RuntimeError("init command failed")
     if os.path.exists("messages.pot"):
         os.remove('messages.pot')
