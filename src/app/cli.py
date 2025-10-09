@@ -3,9 +3,9 @@ import click
 
 from flask import Blueprint
 
-from src.app.models import Post
-from src.app.extensions import db
-from src.app.search import SearchableMixin
+from app.models import Post
+from app.extensions import db
+from app.search import SearchableMixin
 
 bp = Blueprint("cli", __name__, cli_group=None)
 
