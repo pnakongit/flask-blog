@@ -14,7 +14,7 @@ def create_app(config_class_name=None) -> Flask:
     app.config.from_object(config_class_name)
 
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, directory=app.config["SQLALCHEMY_MIGRATE_REPO"])
 
     login.init_app(app)
     login.login_view = app.config["LOGIN_VIEW"]
