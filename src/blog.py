@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+
+BASEDIR = Path(__file__).resolve().parent
+sys.path.append(str(BASEDIR))
+
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import create_app, db
