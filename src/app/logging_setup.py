@@ -14,9 +14,9 @@ def setup_logging(app: Flask) -> None:
         if app.config.get("LOG_TO_STDOUT"):
             app_handler = logging.StreamHandler()
         else:
-            if not os.path.exists("logs"):
-                os.mkdir("logs")
-            app_handler = RotatingFileHandler("logs/blog.log", maxBytes=10240,
+            if not os.path.exists("data/logs"):
+                os.mkdir("data/logs")
+            app_handler = RotatingFileHandler("data/logs/blog.log", maxBytes=10240,
                                                backupCount=10)
         formatter = logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
