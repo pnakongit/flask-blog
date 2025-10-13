@@ -34,6 +34,12 @@ class HerokuConfig(Config):
     ELASTICSEARCH_URL = os.environ.get("SEARCHBOX_URL")
 
 
+class DockerConfig(Config):
+    SQLALCHEMY_DATABASE_URI = (f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}@"
+                               f"db:5432/{os.environ.get('POSTGRES_DB')}")
+    LOG_TO_STDOUT = True
+
+
 class TestConfig(Config):
     TESTING = True
     SECRET_KEY = "testing"
