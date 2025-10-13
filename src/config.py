@@ -1,16 +1,20 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, ".flaskenv"))
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(PROJECT_DIR, ".flaskenv"))
 
 
 class Config:
     SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_URI",
-        "sqlite:///" + os.path.join(basedir, 'app.db')
+        "sqlite:///" + str(PROJECT_DIR.joinpath("data", "app.db")),
     )
+    SQLALCHEMY_MIGRATE_REPO = "src/migrations"
     LOGIN_VIEW = "auth.login"
     LOGIN_MESSAGE = "Please log in to access this page"
     POSTS_PER_PAGE = 3
@@ -28,6 +32,12 @@ class HerokuConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "").replace("postgres://", "postgresql://", 1)
     LOG_TO_STDOUT = True
     ELASTICSEARCH_URL = os.environ.get("SEARCHBOX_URL")
+
+
+class DockerConfig(Config):
+    SQLALCHEMY_DATABASE_URI = (f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}@"
+                               f"db:5432/{os.environ.get('POSTGRES_DB')}")
+    LOG_TO_STDOUT = True
 
 
 class TestConfig(Config):
