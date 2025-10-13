@@ -1,11 +1,16 @@
+import logging
 import os
+import time
+from typing import Callable
+
 import click
 
 from flask import Blueprint
 
 from app.models import Post
-from app.extensions import db
+from app.db import db, is_db_alive
 from app.search import SearchableMixin
+from app.extensions import es_client
 
 bp = Blueprint("cli", __name__, cli_group=None)
 
@@ -19,6 +24,12 @@ def translate() -> None:
 @bp.cli.group()
 def es_search() -> None:
     """Elasticsearch search commands."""
+    pass
+
+
+@bp.cli.group()
+def preprocess() -> None:
+    """Preprocessing commands."""
     pass
 
 
@@ -64,3 +75,44 @@ def init_indexes() -> None:
         model_class = model.class_
         if issubclass(model_class, SearchableMixin):
             model_class.create_index()
+
+
+def retry_connection(name: str, attempts: int, delay_seconds, logger_name: str, func: Callable) -> None:
+    logger = logging.getLogger(logger_name)
+
+    for attempt in range(1, attempts + 1):
+        logger.info(f"Attempt {attempt}/{attempts}.")
+        if func():
+            logger.info(f"{name} is available")
+            return
+        time.sleep(delay_seconds)
+        logger.info(f"{name} is not available, waiting {delay_seconds} second ...")
+    raise RuntimeError(f"{name}is not available")
+
+
+@preprocess.command()
+@click.option("--attempts", default=10, show_default=True, help="Number of retry attempts")
+@click.option("--delay_seconds", default=10, show_default=True, help="How many seconds to wait between retry attempts")
+def wait_for_es(attempts: int, delay_seconds: int) -> None:
+    """ Wait until Elasticsearch is ready """
+    retry_connection(
+        name="elasticsearch",
+        attempts=attempts,
+        delay_seconds=delay_seconds,
+        logger_name="app.elasticsearch",
+        func=es_client.is_alive
+    )
+
+
+@preprocess.command()
+@click.option("--attempts", default=10, show_default=True, help="Number of retry attempts")
+@click.option("--delay_seconds", default=10, show_default=True, help="How many seconds to wait between retry attempts")
+def wait_for_db(attempts: int, delay_seconds: int) -> None:
+    """ Wait until DB is ready """
+    retry_connection(
+        name="database",
+        attempts=attempts,
+        delay_seconds=delay_seconds,
+        logger_name="app",
+        func=is_db_alive
+    )
