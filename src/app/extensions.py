@@ -35,5 +35,8 @@ class ElasticsearchClient:
             self.es_client = es_client_
         app.elasticsearch = self.es_client
 
+    def is_alive(self) -> bool:
+        return self.es_client.ping()
+
 
 es_client = ElasticsearchClient()
